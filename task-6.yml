@@ -18,7 +18,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: task-3-volume
+  name: task-6-volume
   labels:
     type: local
 spec:
