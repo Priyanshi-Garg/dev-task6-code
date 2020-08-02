@@ -1,0 +1,72 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: html-service
+  labels:
+    app: myapp-service
+
+spec:
+  selector:
+    env: production
+  type: NodePort
+  ports:
+    - nodePort: 30000
+      port: 81
+      targetPort: 80
+
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-3-volume
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/docker/devops-task6"
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: html-pvc
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: html-deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      env: production
+  template:
+    metadata:
+      name: html-con
+      labels:
+        env: production
+    spec:
+      containers:
+      - name: html-con
+        image: httpd
+        volumeMounts:
+        - name: web-vol1
+          mountPath: /usr/local/apache2/htdocs 
+
+      volumes:
+      - name: web-vol1
+        persistentVolumeClaim:
+           claimName: html-pvc
